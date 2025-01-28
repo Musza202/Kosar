@@ -4,86 +4,35 @@ const product = [
     {id: 3, name: "barack", price: 350, quantity: 1}
 ];
 
-let ki = document.getElementById("kimenet-body");
-
 class cart {
     constructor(asd) {
-        this.items = asd;
-    }
-
-    viewCart() {
-        console.table(this.items);
+        this.items = asd; 
     }
 
     addProduct(productid, productname, productprice = 400, productquantity = 1) {
         const cartitem = this.items.find(p => p.id == productid);
         if (cartitem === undefined) {
-            this.items = [...this.items, {id: productid, name: productname, price: productprice, quantity: productquantity}];
-            console.log(`Termék hozzáadva: ${productname} - Mennyiség: ${productquantity}`);
+            this.items.push({id: productid, name: productname, price: productprice, quantity: productquantity});
         } else {
-            this.items = this.items.map(item =>
-                item.id === productid ? {...item, quantity: item.quantity + productquantity} : item
-            );
-            console.log(`Termék frissítve: ${productname} - Új mennyiség: ${this.items.find(item => item.id === productid).quantity}`);
+            cartitem.quantity += productquantity;
         }
     }
 
-    removeProduct(productid) {
+    updateProduct(productid, quantity) {
         const cartitem = this.items.find(p => p.id == productid);
-        if (cartitem === undefined) {
-            console.log("Nem található id!");
-        } else {
-            this.items = this.items.filter(item => item.id !== productid);
+        if (cartitem) {
+            cartitem.quantity = quantity;
         }
     }
 
-    updateProduct(productid, productquantity) {
-        this.items = this.items.map(item => item.id == productid ? {...item, quantity: productquantity} : item);
-    }
-
-    cleanCart() {
-        this.items = [];
-    }
-
-    calTotal() {
-        let szamol = 0;
-        for (let i = 0; i < this.items.length; i++) {
-            szamol += this.items[i].price * this.items[i].quantity;
-        }
-        console.log(szamol);
+    getItems() {
+        return this.items;
     }
 }
 
-function kiir(asd) {
-    let tbody = document.createElement("tbody");
-    tbody.id = "kimenet-body";
-    for (let i = 0; i < asd.items.length; i++) {
-        let tr = document.createElement("tr");
-        let idCell = document.createElement("td");
-        let nameCell = document.createElement("td");
-        let priceCell = document.createElement("td");
-        let quantityCell = document.createElement("td");
-
-        idCell.innerText = asd.items[i].id;
-        nameCell.innerText = asd.items[i].name;
-        priceCell.innerText = asd.items[i].price;
-        quantityCell.innerText = asd.items[i].quantity;
-
-        tr.appendChild(idCell);
-        tr.appendChild(nameCell);
-        tr.appendChild(priceCell);
-        tr.appendChild(quantityCell);
-        tbody.appendChild(tr);
-    }
-
-    let regiTbody = document.getElementById("kimenet-body");
-    regiTbody.parentNode.replaceChild(tbody, regiTbody);
-}
-
-// Új termékek hozzáadása az alsó terméklistához
 function renderProductList() {
     let productBody = document.getElementById("product-list-body");
-    productBody.innerHTML = "";  // Clear current list
+    productBody.innerHTML = "";
 
     for (let i = 0; i < product.length; i++) {
         let tr = document.createElement("tr");
@@ -97,17 +46,21 @@ function renderProductList() {
         kosarba.innerText = "Hozzáad";
         kosarba.classList.add("add-to-cart");
 
-        // Check if the product is already in the cart
         const isProductInCart = peldany.items.some(item => item.id === product[i].id);
 
         if (isProductInCart) {
-            kosarba.disabled = true; // Disable button if product is in cart
-            kosarba.innerText = "Hozzáadva"; // Change text to 'Added'
+            kosarba.disabled = false;
+            kosarba.innerText = "Hozzáadás";
+            kosarba.onclick = function () {
+                peldany.addProduct(product[i].id, product[i].name, product[i].price, 1);
+                kiir(peldany);
+                renderProductList(); 
+            };
         } else {
             kosarba.onclick = function () {
                 peldany.addProduct(product[i].id, product[i].name, product[i].price, 1);
-                kiir(peldany); // Update cart (upper table)
-                renderProductList(); // Refresh the lower table
+                kiir(peldany);
+                renderProductList();
             };
         }
 
@@ -119,7 +72,31 @@ function renderProductList() {
     }
 }
 
+function kiir(asd) {
+    let tbody = document.createElement("tbody");
+    tbody.id = "kimenet-body";
+    asd.getItems().forEach(item => {
+        let tr = document.createElement("tr");
+        let idCell = document.createElement("td");
+        let nameCell = document.createElement("td");
+        let priceCell = document.createElement("td");
+        let quantityCell = document.createElement("td");
 
+        idCell.innerText = item.id;
+        nameCell.innerText = item.name;
+        priceCell.innerText = item.price;
+        quantityCell.innerText = item.quantity;
+
+        tr.appendChild(idCell);
+        tr.appendChild(nameCell);
+        tr.appendChild(priceCell);
+        tr.appendChild(quantityCell);
+        tbody.appendChild(tr);
+    });
+
+    let regiTbody = document.getElementById("kimenet-body");
+    regiTbody.parentNode.replaceChild(tbody, regiTbody);
+}
 
 function hozad(asd) {
     let p_id = Number(document.getElementById("id").value);
@@ -127,31 +104,25 @@ function hozad(asd) {
     let p_ar = Number(document.getElementById("ar").value);
     let p_darab = Number(document.getElementById("darab").value);
 
-    // Check if the product is already in the cart
     const isProductInCart = asd.items.some(item => item.id === p_id);
+    
+    if (p_id && p_nev && p_ar && p_darab) {
+        if (!isProductInCart) {
+            asd.addProduct(p_id, p_nev, p_ar, p_darab);
+        } else {
+            alert("Ez a termék már a kosárban van!");
+        }
 
-    if (p_id && p_nev && p_ar && p_darab && !isProductInCart) {
-        // Add the product to the cart if it's not already there
-        asd.addProduct(p_id, p_nev, p_ar, p_darab);
-
-        // Add the new product to the product array for the lower table
-        product.push({id: p_id, name: p_nev, price: p_ar, quantity: p_darab});
-        
-        // Refresh the cart (upper table)
         kiir(asd);
-        // Refresh the lower product list and disable 'Add' button for products already in cart
-        renderProductList();
+        renderProductList(); 
     } else {
-        alert("Ez a termék már a kosárban van, nem adható hozzá újra!"); // Alert if product is already in the cart
+        alert("Hibás adatbevitel!");
     }
 }
 
 
-
-
-// Kezdeti kosár létrehozása
 const peldany = new cart(product);
-
-// Kezdeti megjelenítés
-kiir(peldany);
-renderProductList();
+window.onload = function () {
+    kiir(peldany);
+    renderProductList();
+}
