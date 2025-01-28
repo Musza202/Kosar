@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="cart.js" defer></script>
+    <style>
+        body{
+            background-color: aquamarine;
+        }
+        input {
+            width: 100px;
+            margin: 3px;
+            background-color: cadetblue;
+        }
+        table,td,tr,th{
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+        td{
+            padding:10px; 
+        }
+        button {
+            background-color:purple;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <table id="kimenet">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Név</th>
+                <th>Ár</th>
+                <th>Raktáron</th>
+            </tr>
+        </thead>
+        <tbody id="kimenet-body">
+        </tbody>
+    </table>
+    Id: <input type="text" id="id"> 
+    Név: <input type="text" id="nev"> 
+    Ár: <input type="number" id="ar"> 
+    Darab: <input type="number" id="darab">
+    <button onclick="hozad(peldany)">Hozzáad</button>
+
+    <br><br>
+
+    <table id="product-list">
+        <thead>
+            <tr>
+                <th>Név</th>
+                <th>Ár</th>
+                <th>Hozzáad</th>
+            </tr>
+        </thead>
+        <tbody id="product-list-body">
+        </tbody>
+    </table>
+</body>
+</html>
