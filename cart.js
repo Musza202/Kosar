@@ -1,8 +1,29 @@
-const product = [
+let product = [
     {id: 1, name: "alma", price: 150, quantity: 1},
     {id: 2, name: "körte", price: 250, quantity: 1},
     {id: 3, name: "barack", price: 350, quantity: 1}
 ];
+function alma() {
+    fetch("https://fakestoreapi.com/products")
+        .then(x => x.json())
+        .then(i => render(i))  
+        .catch(err => console.error("Hiba a fetch során:", err));
+}
+
+function render(adat) {
+    let bele = adat.map(elem => {
+        return {
+            id: Number(elem.id), 
+            name: elem.title,  
+            price: Number(elem.price),
+            quantity: 1
+        };
+    });
+
+    product = bele;  
+    kiir(peldany); 
+    renderProductList(); 
+}
 
 class cart {
     constructor(asd) {
@@ -27,6 +48,54 @@ class cart {
 
     getItems() {
         return this.items;
+    }
+}
+
+function kiir(asd) {
+    let tbody = document.createElement("tbody");
+    tbody.id = "kimenet-body";
+    for (let i = 0; i < asd.items.length; i++) {
+        let tr = document.createElement("tr");
+        let idCell = document.createElement("td");
+        let nameCell = document.createElement("td");
+        let priceCell = document.createElement("td");
+        let quantityCell = document.createElement("td");
+
+        idCell.innerText = asd.items[i].id;
+        nameCell.innerText = asd.items[i].name;
+        priceCell.innerText = asd.items[i].price;
+        quantityCell.innerText = asd.items[i].quantity;
+
+        tr.appendChild(idCell);
+        tr.appendChild(nameCell);
+        tr.appendChild(priceCell);
+        tr.appendChild(quantityCell);
+        tbody.appendChild(tr);
+    };
+
+    let regiTbody = document.getElementById("kimenet-body");
+    regiTbody.parentNode.replaceChild(tbody, regiTbody);
+}
+
+function hozad(asd) {
+    let p_id = Number(document.getElementById("id").value);
+    let p_nev = document.getElementById("nev").value;
+    let p_ar = Number(document.getElementById("ar").value);
+    let p_darab = Number(document.getElementById("darab").value);
+
+    const isProductInCart = asd.items.some(item => item.id === p_id);
+    
+    if (p_id && p_nev && p_ar && p_darab) {
+        if (!isProductInCart) {
+            asd.addProduct(p_id, p_nev, p_ar, p_darab);
+        } else {
+            alert("Ez a termék már a kosárban van!");
+        }
+
+        kiir(asd);
+        renderProductList(); 
+    } else {
+        alert("Hibás adatbevitel!");
     }
 }
 
@@ -72,57 +141,8 @@ function renderProductList() {
     }
 }
 
-function kiir(asd) {
-    let tbody = document.createElement("tbody");
-    tbody.id = "kimenet-body";
-    asd.getItems().forEach(item => {
-        let tr = document.createElement("tr");
-        let idCell = document.createElement("td");
-        let nameCell = document.createElement("td");
-        let priceCell = document.createElement("td");
-        let quantityCell = document.createElement("td");
 
-        idCell.innerText = item.id;
-        nameCell.innerText = item.name;
-        priceCell.innerText = item.price;
-        quantityCell.innerText = item.quantity;
-
-        tr.appendChild(idCell);
-        tr.appendChild(nameCell);
-        tr.appendChild(priceCell);
-        tr.appendChild(quantityCell);
-        tbody.appendChild(tr);
-    });
-
-    let regiTbody = document.getElementById("kimenet-body");
-    regiTbody.parentNode.replaceChild(tbody, regiTbody);
-}
-
-function hozad(asd) {
-    let p_id = Number(document.getElementById("id").value);
-    let p_nev = document.getElementById("nev").value;
-    let p_ar = Number(document.getElementById("ar").value);
-    let p_darab = Number(document.getElementById("darab").value);
-
-    const isProductInCart = asd.items.some(item => item.id === p_id);
-    
-    if (p_id && p_nev && p_ar && p_darab) {
-        if (!isProductInCart) {
-            asd.addProduct(p_id, p_nev, p_ar, p_darab);
-        } else {
-            alert("Ez a termék már a kosárban van!");
-        }
-
-        kiir(asd);
-        renderProductList(); 
-    } else {
-        alert("Hibás adatbevitel!");
-    }
-}
 
 
 const peldany = new cart(product);
-window.onload = function () {
-    kiir(peldany);
-    renderProductList();
-}
+alma();
