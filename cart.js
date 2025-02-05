@@ -122,18 +122,6 @@ function kiir(asd) {
     regiTbody.parentNode.replaceChild(tbody, regiTbody);
 }
 
-function hozad(asd) {
-    let p_id = Number(document.getElementById("id").value);
-    let p_nev = document.getElementById("nev").value;
-    let p_ar = Number(document.getElementById("ar").value);
-    let p_darab = Number(document.getElementById("darab").value);
-    
-    if (p_id && p_nev && p_ar && p_darab) {
-        asd.addProduct(p_id, p_nev, p_ar, p_darab);
-    }
-
-    kiir(asd);
-}
 
 function renderProductList() {
     let productBody = document.getElementById("product-list-body");
